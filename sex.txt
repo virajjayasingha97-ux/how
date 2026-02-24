@@ -1,0 +1,501 @@
+mother(ann,henry).
+mother(ann,mary).
+mother(jane,mark).
+mother(jane,francis).
+mother(annette,jonathan).
+mother(mary,bill).
+mother(janice,louise).
+mother(lucy,janet).
+mother(louise,caroline).
+mother(caroline,devid).
+mother(caroline,janet).
+
+father(henry,jonathan).
+father(john,mary).
+father(francis,william).
+father(francis,louise).
+father(john,mark).
+father(gavin,lucy).
+father(john,francis).
+parent(victoria,george).
+parent(victoria,edward).
+
+
+
+
+parent(X,Y):- mother(X,Y).
+parent(X,Y):- father(X,Y).
+
+parent(elizabeth,charles).
+parent(elizabeth,andrew).
+
+ancestor(X,Y):- parent(X,Y).
+ancestor(X,Y):- parent(X,Z),ancestor(Z,Y).
+
+child-of(A,B):- parent(B,A).
+grandfather_of(A,B) :- parent(A,Z),parent(Z,B),father(A,Z).
+grandmother_of(A,B):- parent(A,Z),parent(Z,B),mother(A,Z).
+
+great_grandfather_of(A,B):- father(A,Z), parent(Z,X), parent(X,B).
+
+
+
+uncole(X,Y) :- bother(X,Z),parent(Z,Y).
+
+cousin(X,Y) :- parent(Z,X),parent(R,Y),bother1(Z,W),X\=Y.
+
+son(X,Y) :- parent(Y,X),males(X).
+doutor(X,Y) :- parent(Y,X),females(X).
+offspring(Y, X) :- parent(X, Y).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+prime_factors(N, L) :-
+    N > 0,
+    prime_factors(N, 2, L).
+
+
+prime_factors(1, _, []) :- !.
+
+
+prime_factors(N, D, [D|T]) :-
+    N mod D =:= 0,
+    N1 is N // D,
+    prime_factors(N1, D, T).
+
+
+prime_factors(N, D, L) :-
+    D * D =< N,
+    D1 is D + 1,
+    prime_factors(N, D1, L).
+
+
+prime_factors(N, D, [N]) :-
+    D * D > N. 
+	
+	
+	list nume thi
+
+
+
+contains_number([H|_]) :-
+    number(H).
+
+contains_number([_|T]) :-
+    contains_number(T).	
+	
+	
+	
+	 Tower of Hanoi
+	
+	move(1, Source, _, Target) :-
+    write('Move disk from '),
+    write(Source),
+    write(' to '),
+    write(Target), nl.
+
+move(N, Source, Intermediate, Target) :-
+    N > 1,
+    M is N - 1,
+    move(M, Source, Target, Intermediate),
+    write('Move disk from '),
+    write(Source),
+    write(' to '),
+    write(Target), nl,
+    move(M, Intermediate, Source, Target).
+	
+
+
+	
+	
+	local Robot Path-Finding
+-
+	travel(Start, End, Visited, Path, Distance) :-
+
+    path(Start, End, Dist),
+
+    \+ member(End, Visited),
+
+    Path = [Start, End],
+
+    Distance = Dist.
+
+-
+
+	path(Start, Next, Dist1),
+
+    Next \== End,
+
+    \+ member(Next, Visited),
+
+    travel(Next, End, [Next|Visited], Path2, Dist2),
+
+    Path = [Start|Path2],
+
+    Distance is Dist1 + Dist2.
+	
+-
+
+	shortest_path(Start, End, Path, Distance) :-
+
+    setof(D-P, travel(Start, End, [Start], P, D),
+          [Distance-Path | _]).
+
+-
+
+	show_route(Start, End) :-
+
+    shortest_path(Start, End, Path, Distance),
+
+    write('Shortest Path: '), write(Path), nl,
+
+    write('Total Distance: '), write(Distance), write(' meters'), nl.
+
+
+list_length([], 0).
+
+list_length([_ | T], N) :-
+    list_length(T, N1),
+    N is N1 + 1.
+sum_list([], 0).
+
+sum_list([H | T], S) :-
+    sum_list(T, S1),
+    S is H + S1.
+my_member(X, [X | _]).
+
+my_member(X, [_ | T]) :-
+    my_member(X, T).
+my_append([], L, L).
+
+my_append([H | T], L2, [H | R]) :-
+    my_append(T, L2, R).
+insert_element([], X, [X]).
+
+insert_element([H | T], X, [H | R]) :-
+    insert_element(T, X, R).
+delete_element(_, [], []).
+
+delete_element(X, [X | T], T).
+
+delete_element(X, [H | T], [H | R]) :-
+    delete_element(X, T, R).
+reverse_list([], []).
+
+reverse_list([H | T], R) :-
+    reverse_list(T, RT),
+    my_append(RT, [H], R).
+palindrome(L) :-
+    reverse_list(L, L).
+last_element([X], X).
+
+last_element([_ | T], X) :-
+    last_element(T, X).
+
+write_file :-
+    open('data.txt', write, Stream),   
+    write(Stream, 'Hello Prolog'),     
+    nl(Stream),                        
+    write(Stream, 'This is file writing example'),
+    close(Stream),                    
+    write('Data written successfully'), nl.
+read_file :-
+    open('data.txt', read, Stream),
+    repeat,
+    get_char(Stream, Char),
+
+    ( Char == end_of_file ->
+        close(Stream),
+        write('End of file'), nl, !
+    ;
+        write(Char),
+        fail
+    ).
+add_student :-
+    write('Enter student name: '),
+    read(Name),
+
+    open('students.txt', append, Stream),
+
+    write(Stream, Name),
+    nl(Stream),
+
+    close(Stream),
+
+    write('Student saved successfully'), nl.
+    
+    
+    
+   Missionaries and Cannibals Problem
+   
+
+tate representation: state(MissionariesLeft, CannibalsLeft, BoatSide) 
+initial_state(state(3, 3, left)).
+goal_state(state(0, 0, right)).
+
+Safe state: missionaries >= cannibals on each side (if missionaries > 0) 
+safe(state(M, C, _)) :-
+    M >= 0, M =< 3,
+    C >= 0, C =< 3,
+    (M = 0 ; M >= C),
+    M_right is 3 - M,
+    C_right is 3 - C,
+    (M_right = 0 ; M_right >= C_right).
+
+Moves: boat can take 1 or 2 people 
+move(state(M, C, left), state(M2, C2, right)) :-
+    between(0, 2, MM), between(0, 2, CC),
+    MM + CC >= 1, MM + CC =< 2,
+    M2 is M - MM, C2 is C - CC,
+    safe(state(M2, C2, right)).
+    
+move(state(M, C, right), state(M2, C2, left)) :-
+    between(0, 2, MM), between(0, 2, CC),
+    MM + CC >= 1, MM + CC =< 2,
+    M2 is M + MM, C2 is C + CC,
+    safe(state(M2, C2, left)).
+
+DFS search
+find_route(State, State, Visited, Route) :- reverse(Visited, Route).
+find_route(Current, Goal, Visited, Route) :-
+    move(Current, Next),
+    \+ member(Next, Visited),
+    find_route(Next, Goal, [Next|Visited], Route).
+
+solve_missionaries :-
+    initial_state(Start),
+    goal_state(Goal),
+    find_route(Start, Goal, [Start], Route),
+    write('Solution Path:'), nl,
+    write(Route), nl.
+    
+  
+   Water Jug Problem
+   
+
+State: state(Jug8, Jug5, Jug3) 
+initial_state(state(0, 0, 0)).
+goal_state(state(4, _, _)).
+
+Fill, Empty, Pour operations 
+move(state(J8, J5, J3), state(8, J5, J3)) :- J8 < 8.
+move(state(J8, J5, J3), state(J8, 5, J3)) :- J5 < 5.
+move(state(J8, J5, J3), state(J8, J5, 3)) :- J3 < 3.
+
+move(state(J8, J5, J3), state(0, J5, J3)) :- J8 > 0.
+move(state(J8, J5, J3), state(J8, 0, J3)) :- J5 > 0.
+move(state(J8, J5, J3), state(J8, J5, 0)) :- J3 > 0.
+
+move(state(J8, J5, J3), state(J8New, J5New, J3New)) :-
+    J8 + J5New =< 8, J5New is min(5, J8 + J5), J8New is J8 + J5 - J5New, J3New = J3.
+move(state(J8, J5, J3), state(J8New, J5New, J3New)) :-
+    J8 + J3New =< 8, J3New is min(3, J8 + J3), J8New is J8 + J3 - J3New, J5New = J5.
+
+DFS search 
+find_route(State, State, Visited, Route) :- reverse(Visited, Route).
+find_route(Current, Goal, Visited, Route) :-
+    move(Current, Next),
+    \+ member(Next, Visited),
+    find_route(Next, Goal, [Next|Visited], Route).
+
+solve_jug :-
+    initial_state(Start),
+    goal_state(Goal),
+    find_route(Start, Goal, [Start], Route),
+    write('Solution Path:'), nl,
+    write(Route), nl.
+    
+    
+    
+   Farmer, Tiger, Goat, Grass River Crossing Problem
+  
+
+tate Representation 
+   state(Farmer, Tiger, Goat, Grass)
+   Each can be: left or right
+
+
+initial_state(state(right, right, right, right)).
+goal_state(state(left, left, left, left)).
+
+ Opposite River Banks
+
+opposite(left, right).
+opposite(right, left).
+
+
+unsafe(state(F, T, G, _)) :-
+    F \= T,
+    T = G.
+
+unsafe(state(F, _, G, R)) :-
+    F \= G,
+    G = R.
+
+Safe State 
+safe(State) :-
+    \+ unsafe(State).
+
+Possible Moves -
+
+1. Farmer goes alone 
+move(state(F, T, G, R), state(NewF, T, G, R)) :-
+    opposite(F, NewF),
+    safe(state(NewF, T, G, R)).
+
+2. Farmer takes Tiger 
+move(state(F, T, G, R), state(NewF, NewT, G, R)) :-
+    F = T,                   
+    opposite(F, NewF),       
+    NewT = NewF,             
+    safe(state(NewF, NewT, G, R)).
+
+3. Farmer takes Goat
+move(state(F, T, G, R), state(NewF, T, NewG, R)) :-
+    F = G,                  
+    opposite(F, NewF),
+    NewG = NewF,             
+    safe(state(NewF, T, NewG, R)).
+
+4. Farmer takes Grass 
+move(state(F, T, G, R), state(NewF, T, G, NewR)) :-
+    F = R,                  
+    opposite(F, NewF),
+    NewR = NewF,             
+    safe(state(NewF, T, G, NewR)).
+
+Search for Solution 
+
+Base case: goal reached
+find_route(State, State, Visited, Route) :-
+    reverse(Visited, Route).
+
+Recursive case: keep searching
+find_route(Current, Goal, Visited, Route) :-
+    move(Current, Next),             
+    \+ member(Next, Visited),        
+    find_route(Next, Goal, [Next|Visited], Route).
+
+Print Solution
+show_steps([]).
+show_steps([H|T]) :-
+    write(H), nl,
+    show_steps(T).
+
+/Main Solver 
+
+solve :-
+    find_route(
+        state(right, right, right, right),   
+        state(left, left, left, left),       
+        [state(right, right, right, right)], 
+        Route                          
+    ),
+    nl, write('Solution Path Found:'), nl,
+    write('--------------------'), nl,
+    show_steps(Route),
+    nl, write('--- Everyone is safe on the left side! ---'), nl.
+    
+ 
+super(daniel, lisa).
+super(daniel, stewie).
+super(lisa, peter).
+super(lisa, marge).
+super(lisa, maggie).
+super(stewie, lois).
+super(stewie, peter).
+super(lois, meg).
+super(peter, brian).
+super(marge, chris).
+super(marge, bart).
+
+
+supervisor_student(Supervisor, Student) :-
+    super(Supervisor, Student).
+
+
+joint_supervised(Student, Supervisor1, Supervisor2) :-
+    super(Supervisor1, Student),
+    super(Supervisor2, Student),
+    Supervisor1 \= Supervisor2.
+
+
+shared_supervisor(Student1, Student2, Supervisor) :-
+    super(Supervisor, Student1),
+    super(Supervisor, Student2),
+    Student1 \= Student2.
+
+same_grand_supervisor(Student1, Student2, GrandSupervisor) :-
+    super(Supervisor1, Student1),
+    super(Supervisor2, Student2),
+    Supervisor1 \= Supervisor2,
+    super(GrandSupervisor, Supervisor1),
+    super(GrandSupervisor, Supervisor2).
+    
+    
+   
+   Rotate a list N places
+
+
+% rotate(List, N, RotatedList)
+rotate(List, N, Rotated) :-
+    length(List, Len),
+    % handle negative or large N
+    N1 is ((N mod Len) + Len) mod Len,
+    split_at(N1, List, Left, Right),
+    append(Right, Left, Rotated).
+
+% split_at(N, List, Left, Right): splits List into Left and Right at position N
+split_at(0, List, [], List).
+split_at(N, [H|T], [H|L], R) :-
+    N > 0,
+    N1 is N - 1,
+    split_at(N1, T, L, R).
+    
+    
+   
+   Check if a list contains a number
+   
+ contains_number(List) succeeds if any element is a number
+contains_number([H|_]) :-
+    number(H), !.
+contains_number([_|T]) :-
+    contains_number(T).
+    
+
+  Flatten a nested list
+   
+
+% flatten_list(+NestedList, -FlatList)
+flatten_list([], []).
+flatten_list([H|T], Flat) :-
+    is_list(H),
+    flatten_list(H, FlatH),
+    flatten_list(T, FlatT),
+    append(FlatH, FlatT, Flat).
+flatten_list([H|T], [H|FlatT]) :-
+    \+ is_list(H),
+    flatten_list(T, FlatT).
