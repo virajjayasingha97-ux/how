@@ -1,0 +1,273 @@
+mother(ann,henry).
+mother(ann,mary).
+mother(jane,mark).
+mother(jane,francis).
+mother(annette,jonathan).
+mother(mary,bill).
+mother(janice,louise).
+mother(lucy,janet).
+mother(louise,caroline).
+mother(caroline,devid).
+mother(caroline,janet).
+
+father(henry,jonathan).
+father(john,mary).
+father(francis,william).
+father(francis,louise).
+father(john,mark).
+father(gavin,lucy).
+father(john,francis).
+parent(victoria,george).
+parent(victoria,edward).
+
+
+
+
+parent(X,Y):- mother(X,Y).
+parent(X,Y):- father(X,Y).
+
+parent(elizabeth,charles).
+parent(elizabeth,andrew).
+
+ancestor(X,Y):- parent(X,Y).
+ancestor(X,Y):- parent(X,Z),ancestor(Z,Y).
+
+child-of(A,B):- parent(B,A).
+grandfather_of(A,B) :- parent(A,Z),parent(Z,B),father(A,Z).
+grandmother_of(A,B):- parent(A,Z),parent(Z,B),mother(A,Z).
+
+great_grandfather_of(A,B):- father(A,Z), parent(Z,X), parent(X,B).
+
+
+
+uncole(X,Y) :- bother(X,Z),parent(Z,Y).
+
+cousin(X,Y) :- parent(Z,X),parent(R,Y),bother1(Z,W),X\=Y.
+
+son(X,Y) :- parent(Y,X),males(X).
+doutor(X,Y) :- parent(Y,X),females(X).
+offspring(Y, X) :- parent(X, Y).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+prime_factors(N, L) :-
+    N > 0,
+    prime_factors(N, 2, L).
+
+
+prime_factors(1, _, []) :- !.
+
+
+prime_factors(N, D, [D|T]) :-
+    N mod D =:= 0,
+    N1 is N // D,
+    prime_factors(N1, D, T).
+
+
+prime_factors(N, D, L) :-
+    D * D =< N,
+    D1 is D + 1,
+    prime_factors(N, D1, L).
+
+
+prime_factors(N, D, [N]) :-
+    D * D > N. 
+	
+	
+	list nume thi
+
+
+
+contains_number([H|_]) :-
+    number(H).
+
+contains_number([_|T]) :-
+    contains_number(T).	
+	
+	
+	
+	
+	
+	move(1, Source, _, Target) :-
+    write('Move disk from '),
+    write(Source),
+    write(' to '),
+    write(Target), nl.
+
+move(N, Source, Intermediate, Target) :-
+    N > 1,
+    M is N - 1,
+    move(M, Source, Target, Intermediate),
+    write('Move disk from '),
+    write(Source),
+    write(' to '),
+    write(Target), nl,
+    move(M, Intermediate, Source, Target).
+	
+
+path-
+
+
+move(A,B) :- move(B,A).
+
+% route finding procedure
+route(Start, Goal, Path) :-
+    travel(Start, Goal, [Start], Path).
+
+travel(Goal, Goal, Visited, Path) :-
+    reverse(Visited, Path).
+
+travel(Current, Goal, Visited, Path) :-
+    move(Current, Next),
+    \+ member(Next, Visited),
+    travel(Next, Goal, [Next|Visited], Path).
+	
+	
+	dre c
+	travel(Goal, Goal, Visited, Path) :-
+    reverse(Visited, Path), !.
+	
+	re
+	
+	travel(Current, Goal, Visited, Path) :-
+    move(Current, Next), !,
+    \+ member(Next, Visited),
+    travel(Next, Goal, [Next|Visited], Path).
+	
+	
+	local
+-
+	travel(Start, End, Visited, Path, Distance) :-
+
+    path(Start, End, Dist),
+
+    \+ member(End, Visited),
+
+    Path = [Start, End],
+
+    Distance = Dist.
+
+-
+
+	path(Start, Next, Dist1),
+
+    Next \== End,
+
+    \+ member(Next, Visited),
+
+    travel(Next, End, [Next|Visited], Path2, Dist2),
+
+    Path = [Start|Path2],
+
+    Distance is Dist1 + Dist2.
+	
+-
+
+	shortest_path(Start, End, Path, Distance) :-
+
+    setof(D-P, travel(Start, End, [Start], P, D),
+          [Distance-Path | _]).
+
+-
+
+	show_route(Start, End) :-
+
+    shortest_path(Start, End, Path, Distance),
+
+    write('Shortest Path: '), write(Path), nl,
+
+    write('Total Distance: '), write(Distance), write(' meters'), nl.
+
+
+list_length([], 0).
+
+list_length([_ | T], N) :-
+    list_length(T, N1),
+    N is N1 + 1.
+sum_list([], 0).
+
+sum_list([H | T], S) :-
+    sum_list(T, S1),
+    S is H + S1.
+my_member(X, [X | _]).
+
+my_member(X, [_ | T]) :-
+    my_member(X, T).
+my_append([], L, L).
+
+my_append([H | T], L2, [H | R]) :-
+    my_append(T, L2, R).
+insert_element([], X, [X]).
+
+insert_element([H | T], X, [H | R]) :-
+    insert_element(T, X, R).
+delete_element(_, [], []).
+
+delete_element(X, [X | T], T).
+
+delete_element(X, [H | T], [H | R]) :-
+    delete_element(X, T, R).
+reverse_list([], []).
+
+reverse_list([H | T], R) :-
+    reverse_list(T, RT),
+    my_append(RT, [H], R).
+palindrome(L) :-
+    reverse_list(L, L).
+last_element([X], X).
+
+last_element([_ | T], X) :-
+    last_element(T, X).
+
+write_file :-
+    open('data.txt', write, Stream),   
+    write(Stream, 'Hello Prolog'),     
+    nl(Stream),                        
+    write(Stream, 'This is file writing example'),
+    close(Stream),                    
+    write('Data written successfully'), nl.
+read_file :-
+    open('data.txt', read, Stream),
+    repeat,
+    get_char(Stream, Char),
+
+    ( Char == end_of_file ->
+        close(Stream),
+        write('End of file'), nl, !
+    ;
+        write(Char),
+        fail
+    ).
+add_student :-
+    write('Enter student name: '),
+    read(Name),
+
+    open('students.txt', append, Stream),
+
+    write(Stream, Name),
+    nl(Stream),
+
+    close(Stream),
+
+    write('Student saved successfully'), nl.
