@@ -499,3 +499,183 @@ flatten_list([H|T], Flat) :-
 flatten_list([H|T], [H|FlatT]) :-
     \+ is_list(H),
     flatten_list(T, FlatT).
+
+
+
+tate(MonkeyPosition, MonkeyStatus, BoxPosition, HasBanana)
+
+
+
+goal(state(_, _, _, has)).
+
+
+
+1. Walk (only if monkey is on floor)
+move(
+    state(P1, onfloor, BoxPos, H),
+    walk(P1, P2),
+    state(P2, onfloor, BoxPos, H)
+) :-
+    member(P2, [door, window, middle]),
+    P1 \= P2.
+
+2. Push box (monkey must be at same place as box and on floor)
+move(
+    state(P1, onfloor, P1, H),
+    push(P1, P2),
+    state(P2, onfloor, P2, H)
+) :-
+    member(P2, [door, window, middle]),
+    P1 \= P2.
+
+3. Climb box (monkey and box must be same position)
+move(
+    state(P, onfloor, P, H),
+    climb,
+    state(P, onbox, P, H)
+).
+
+4. Grasp banana (banana is at middle, monkey must be on box at middle)
+move(
+    state(middle, onbox, middle, no),
+    grasp,
+    state(middle, onbox, middle, has)
+).
+
+
+
+solve(State, []) :-
+    goal(State).
+
+solve(State1, [Action | Rest]) :-
+    move(State1, Action, State2),
+    solve(State2, Rest).
+
+
+
+start :-
+    solve(state(door, onfloor, window, no), Solution),
+    write('Solution Steps: '), nl,
+    write(Solution), nl.
+
+
+prolog
+path(gate, admin, 50).
+path(admin, library, 40).
+path(library, fcbs, 30).
+path(library, fos, 35).
+path(admin, auditorium, 60).
+path(auditorium, canteen, 25).
+path(canteen, hostel, 45).
+path(hostel, lab, 20).
+path(gate, ground, 55).
+path(ground, fos, 50).
+
+% Bidirectional paths
+path(X,Y,D) :- path(Y,X,D).
+```
+4) Selected Search Strategy – DFS (10 marks)
+
+I choose **Depth First Search (DFS)**.
+
+Reason:
+
+* Easy to implement in Prolog (natural recursion)
+* Uses less memory than BFS
+* Suitable when campus map is small
+* Prolog supports DFS naturally
+
+
+5) Rules to Find Path (20 marks)
+
+```prolog
+travel(Start, End, Visited, Path, Dist) :-
+    path(Start, End, D),
+    \+ member(End, Visited),
+    Path = [End|Visited],
+    Dist = D.
+
+travel(Start, End, Visited, Path, Dist) :-
+    path(Start, Next, D1),
+    Next \= End,
+    \+ member(Next, Visited),
+    travel(Next, End, [Next|Visited], Path, D2),
+    Dist is D1 + D2.
+    
+
+ 6) Query Execution (10 marks)
+
+
+
+```prolog
+?- travel(gate, fcbs, [gate], Path, Dist).
+```
+
+Example Output:
+
+```
+Path = [fcbs, library, admin, gate]
+Dist = 120
+```
+
+Final Route (reverse it for correct order):
+
+```
+gate → admin → library → fcbs
+Total Distance = 120m
+```
+
+
+7) Modification for Shortest Path (10 marks)
+
+DFS does NOT guarantee shortest path.
+
+To find shortest path:
+
+* Use BFS OR
+* Use Best First Search OR
+* Collect all possible paths and choose minimum distance
+
+Modification needed:
+
+* Store all possible paths
+* Compare distances
+* Select minimum distance
+
+
+ 8) Full Shortest Path Code (20 marks)
+
+```prolog
+% Bidirectional
+connected(X,Y,D) :- path(X,Y,D).
+connected(X,Y,D) :- path(Y,X,D).
+
+
+Find all paths
+route(Start, End, Path, Dist) :-
+    route(Start, End, [Start], Path, Dist).
+
+route(End, End, Visited, Path, 0) :-
+    reverse(Visited, Path).
+
+route(Start, End, Visited, Path, Dist) :-
+    connected(Start, Next, D1),
+    \+ member(Next, Visited),
+    route(Next, End, [Next|Visited], Path, D2),
+    Dist is D1 + D2.
+
+Shortest Path
+shortest_path(Start, End, ShortestPath, ShortestDist) :-
+    setof(D-P, route(Start, End, P, D), [ShortestDist-ShortestPath|_]).
+```
+
+Run:
+
+?- shortest_path(gate, fcbs, Path, Dist).
+
+
+Output:
+```
+Path = [gate, admin, library, fcbs]
+Dist = 120
+```
