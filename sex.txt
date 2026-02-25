@@ -679,3 +679,62 @@ Output:
 Path = [gate, admin, library, fcbs]
 Dist = 120
 ```
+
+student(alice).
+student(bob).
+student(carol).
+
+cource(mathamatics).
+cource(computer_scinece).
+cource(physics).
+
+enrold(alice,mathamatics).
+enrold(bob,mathamatics).
+enrold(bob,computer_scinece).
+enrold(carol,physics).
+
+marks(alice, mathematics, 60).
+marks(bob, mathematics, 70).
+marks(bob, computer_science, 80).
+marks(carol, physics, 45).
+
+passed(X,Y):- enrold(X,Y),marks(X,Y,marks),marks >= 50.
+
+can_take(X,physics) :- passed(X,physics).
+
+
+parent(tom, bob).
+parent(bob, jim).
+parent(alice, bob).
+
+% Version 1 (good)
+pred1(X,Z) :- parent(X,Z).
+pred1(X,Z) :- parent(X,Y), pred1(Y,Z).
+
+% Version 2 (recursive clause first)
+pred2(X,Z) :- parent(X,Y), pred2(Y,Z).
+pred2(X,Z) :- parent(X,Z).
+
+% Version 3 (left-recursive inside clause)
+pred3(X,Z) :- parent(X,Z).
+pred3(X,Z) :- pred3(X,Y), parent(Y,Z).
+
+% Version 4 (recursive clause first + left recursion)
+pred4(X,Z) :- pred4(X,Y), parent(Y,Z).
+pred4(X,Z) :- parent(X,Z).
+
+
+animal(penguin).
+animal(sparrow).
+animal(eagle).
+
+bird(penguin).
+bird(sparrow).
+bird(eagle).
+
+cannot_fly(penguin).
+
+can_fly(X) :- bird(X),\+cannot_fly(X).
+cannot_fly(X) :- bird(X),cannot_fly(X).
+
+can_hunt(eagle).
